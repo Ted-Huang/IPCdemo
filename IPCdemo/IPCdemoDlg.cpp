@@ -38,7 +38,7 @@ BEGIN_MESSAGE_MAP(CIPCdemoDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
 	ON_CONTROL_RANGE(BN_CLICKED, UI_POS_BTN_BEGIN, UI_POS_BTN_END, &OnBtnClick)
-	ON_MESSAGE(WM_TESTSENDMSG_MSG, &OnTestMsg)
+	ON_MESSAGE(WM_IPC_MSG, &OnIPCMsg)
 END_MESSAGE_MAP()
 
 
@@ -198,11 +198,11 @@ void CIPCdemoDlg::Finalize()
 	}
 }
 
-LRESULT CIPCdemoDlg::OnTestMsg(WPARAM wp, LPARAM lp)
+LRESULT CIPCdemoDlg::OnIPCMsg(WPARAM wp, LPARAM lp)
 {
 	switch (wp)
 	{
-	case WM_TESTWPARAM:
+	case Cmd_Test:
 	{
 		CString strMsg;
 		strMsg.Format(_T("%d"), lp);
@@ -212,6 +212,11 @@ LRESULT CIPCdemoDlg::OnTestMsg(WPARAM wp, LPARAM lp)
 
 		m_pLbDebugString->AddString(strMsg);
 		m_pLbDebugString->SetCurSel(m_pLbDebugString->GetCount() - 1);
+		break;
+	}
+	case Cmd_SharedMemory:
+	{
+		TRACE(_T("rec!"));
 		break;
 	}
 	default:
@@ -231,7 +236,7 @@ void CIPCdemoDlg::OnBtnClick(UINT nID)
 		if (!hwnd)
 			return;
 		
-		::PostMessage(hwnd, WM_TESTSENDMSG_MSG, WM_TESTWPARAM, (LPARAM)10); //lparam
+		::PostMessage(hwnd, WM_IPC_MSG, Cmd_Test, (LPARAM)10); //lparam
 		break;
 	}
 	case UI_POS_BTN_CLEAR:

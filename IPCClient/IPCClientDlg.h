@@ -30,20 +30,24 @@ protected:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	afx_msg LRESULT OnTestMsg(WPARAM wp, LPARAM lp);
+	afx_msg LRESULT OnIPCMsg(WPARAM wp, LPARAM lp);
 	afx_msg void OnBtnClick(UINT nID);
 	DECLARE_MESSAGE_MAP()
 
 private:
 	void Init();
+	void InitSocket();
 	void InitCtrl();
 	void Finalize();
 
 private:
 	CSocketClient* m_pSocketClient;
 	CButton* m_pBtnSendMsg;
+	CButton* m_pBtnSharedMem;
 	CButton* m_pBtnClear;
 	CListBox* m_pLbDebugString;
+	HANDLE m_hMapFile;
+	LPVOID m_pBuf;
 	enum{
 		UI_POS_ITEM_BEGIN = 100,	//太小會遇到ID重複的狀況
 		//BTN

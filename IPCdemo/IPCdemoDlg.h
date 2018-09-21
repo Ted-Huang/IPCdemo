@@ -29,7 +29,7 @@ protected:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnPaint();
 	afx_msg void OnBtnClick(UINT nID);
-	afx_msg LRESULT OnTestMsg(WPARAM wp, LPARAM lp);
+	afx_msg LRESULT OnIPCMsg(WPARAM wp, LPARAM lp);
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 
