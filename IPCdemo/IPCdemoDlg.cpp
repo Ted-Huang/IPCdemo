@@ -308,10 +308,11 @@ void CIPCdemoDlg::HandleSharedMemory(LPARAM lp)
 	if (!m_pLbSMString)
 		return ;
 
-	CString strMsg;
-	int i2;
-	memcpy(&i2, m_pBuf, (int)lp);
-	strMsg.Format(_T("%d"), i2);
+	CString strMsg, str2;
+	LPTSTR p = new WCHAR[(int)lp];
+	memcpy(p, m_pBuf, (int)lp);
+	str2 = p;
+	strMsg.Format(_T("%d %s | %s"), 0, p, str2);
 	m_pLbSMString->AddString(strMsg);
 	m_pLbSMString->SetCurSel(m_pLbSMString->GetCount() - 1);
 }

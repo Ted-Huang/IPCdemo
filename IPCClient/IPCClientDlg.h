@@ -48,6 +48,7 @@ private:
 	CButton* m_pBtnClear;
 	CListBox* m_pLbDebugString;
 	CListBox* m_pLbSMString;
+	CEdit* m_EdSharedMem;
 	HANDLE m_hMapFile;
 	LPVOID m_pBuf;
 	enum{
@@ -62,6 +63,10 @@ private:
 		UI_POS_LB_BEGIN,
 		UI_POS_LB_DEBUGSTRING,
 		UI_POS_LB_SMSTRING,
+		//EDIT
+		UI_POS_ED_BEGIN,
+		UI_POS_ED_SHAREDMEMORY,
+		UI_POS_ED_END,
 		UI_POS_LB_END,
 	};
 };
