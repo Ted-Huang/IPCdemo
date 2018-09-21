@@ -37,7 +37,8 @@ BEGIN_MESSAGE_MAP(CIPCdemoDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
-	ON_CONTROL_RANGE(BN_CLICKED, UI_POS_BTN_SENDMSG, UI_POS_BTN_SHAREDMEMORY, &OnBtnClick)
+	ON_CONTROL_RANGE(BN_CLICKED, UI_POS_BTN_BEGIN, UI_POS_BTN_END, &OnBtnClick)
+	ON_MESSAGE(WM_TESTSENDMSG_MSG, &OnTestMsg)
 END_MESSAGE_MAP()
 
 
@@ -159,6 +160,16 @@ void CIPCdemoDlg::InitCtrl()
 	ptSize = { 90, 30 };
 	m_pBtnSendMsg = new CButton();
 	m_pBtnSendMsg->Create(_T("SendMsg"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_SENDMSG);
+
+	ptBase = { 150, 10 };
+	ptSize = { 200, 70 };
+	m_pLbDebugString = new CListBox();
+	m_pLbDebugString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_DEBUGSTRING);
+
+	ptBase = { 10, 50 };
+	ptSize = { 90, 30 };
+	m_pBtnClear = new CButton();
+	m_pBtnClear->Create(_T("Clear"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_CLEAR);
 }
 
 void CIPCdemoDlg::Finalize()
@@ -167,6 +178,46 @@ void CIPCdemoDlg::Finalize()
 		delete m_pSocketServer;
 		m_pSocketServer = NULL;
 	}
+
+	if (m_pBtnSendMsg){
+		m_pBtnSendMsg->DestroyWindow();
+		delete m_pBtnSendMsg;
+		m_pBtnSendMsg = NULL;
+	}
+
+	if (m_pLbDebugString){
+		m_pLbDebugString->DestroyWindow();
+		delete m_pLbDebugString;
+		m_pLbDebugString = NULL;
+	}
+
+	if (m_pBtnClear){
+		m_pBtnClear->DestroyWindow();
+		delete m_pBtnClear;
+		m_pBtnClear = NULL;
+	}
+}
+
+LRESULT CIPCdemoDlg::OnTestMsg(WPARAM wp, LPARAM lp)
+{
+	switch (wp)
+	{
+	case WM_TESTWPARAM:
+	{
+		CString strMsg;
+		strMsg.Format(_T("%d"), lp);
+
+		if (!m_pLbDebugString)
+			return 0L;
+
+		m_pLbDebugString->AddString(strMsg);
+		m_pLbDebugString->SetCurSel(m_pLbDebugString->GetCount() - 1);
+		break;
+	}
+	default:
+		break;
+	}
+	return 1L;
 }
 
 
@@ -181,6 +232,13 @@ void CIPCdemoDlg::OnBtnClick(UINT nID)
 			return;
 		
 		::PostMessage(hwnd, WM_TESTSENDMSG_MSG, WM_TESTWPARAM, (LPARAM)10); //lparam
+		break;
+	}
+	case UI_POS_BTN_CLEAR:
+	{
+		if (!m_pLbDebugString)
+			return;
+		m_pLbDebugString->ResetContent();
 		break;
 	}
 	default:

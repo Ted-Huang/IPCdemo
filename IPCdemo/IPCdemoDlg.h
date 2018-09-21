@@ -29,6 +29,7 @@ protected:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnPaint();
 	afx_msg void OnBtnClick(UINT nID);
+	afx_msg LRESULT OnTestMsg(WPARAM wp, LPARAM lp);
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 
@@ -40,9 +41,19 @@ private:
 private:
 	CSocketServer* m_pSocketServer;
 	CButton* m_pBtnSendMsg;
+	CButton* m_pBtnClear;
+	CListBox* m_pLbDebugString;
 	enum{
 		UI_POS_ITEM_BEGIN = 100,	//太小會遇到ID重複的狀況
+		//BTN
+		UI_POS_BTN_BEGIN,
 		UI_POS_BTN_SENDMSG,
-		UI_POS_BTN_SHAREDMEMORY
+		UI_POS_BTN_SHAREDMEMORY,
+		UI_POS_BTN_CLEAR,
+		UI_POS_BTN_END,
+		//LIST BOX
+		UI_POS_LB_BEGIN,
+		UI_POS_LB_DEBUGSTRING,
+		UI_POS_LB_END,
 	};
 };
