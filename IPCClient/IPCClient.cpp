@@ -70,6 +70,20 @@ BOOL CIPCClientApp::InitInstance()
 	// (例如，公司名稱或組織名稱)
 	SetRegistryKey(_T("本機 AppWizard 所產生的應用程式"));
 
+	//set class name
+	WNDCLASS wc;
+	// Get the info for this class.
+	// #32770 is the default class name for dialogs boxes.
+	::GetClassInfo(AfxGetInstanceHandle(), L"#32770", &wc);
+
+	// Change the name of the class.
+	wc.lpszClassName = L"CIPCClientDlg";
+
+	// Register this class so that MFC can use it.
+	if (!AfxRegisterClass(&wc)){
+		TRACE(_T("reg error"));
+	}
+
 	CIPCClientDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
