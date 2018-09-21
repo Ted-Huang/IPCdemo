@@ -4,6 +4,8 @@
 
 #include "stdafx.h"
 #include "IPCClient.h"
+#include "SocketClient.h"
+#include "Utility.h"
 #include "IPCClientDlg.h"
 #include "afxdialogex.h"
 
@@ -12,45 +14,17 @@
 #endif
 
 
-// 對 App About 使用 CAboutDlg 對話方塊
-
-class CAboutDlg : public CDialogEx
-{
-public:
-	CAboutDlg();
-
-// 對話方塊資料
-	enum { IDD = IDD_ABOUTBOX };
-
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支援
-
-// 程式碼實作
-protected:
-	DECLARE_MESSAGE_MAP()
-};
-
-CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
-{
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialogEx::DoDataExchange(pDX);
-}
-
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
-END_MESSAGE_MAP()
-
-
 // CIPCClientDlg 對話方塊
-
-
 
 CIPCClientDlg::CIPCClientDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CIPCClientDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+}
+
+CIPCClientDlg::~CIPCClientDlg()
+{
+	Finalize();
 }
 
 void CIPCClientDlg::DoDataExchange(CDataExchange* pDX)
@@ -61,6 +35,7 @@ void CIPCClientDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CIPCClientDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
+	ON_WM_TIMER()
 	ON_WM_QUERYDRAGICON()
 END_MESSAGE_MAP()
 
@@ -71,47 +46,17 @@ BOOL CIPCClientDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// 將 [關於...] 功能表加入系統功能表。
-
-	// IDM_ABOUTBOX 必須在系統命令範圍之中。
-	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
-	ASSERT(IDM_ABOUTBOX < 0xF000);
-
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL)
-	{
-		BOOL bNameValid;
-		CString strAboutMenu;
-		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
-		ASSERT(bNameValid);
-		if (!strAboutMenu.IsEmpty())
-		{
-			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
-		}
-	}
-
-	// 設定此對話方塊的圖示。當應用程式的主視窗不是對話方塊時，
-	// 框架會自動從事此作業
 	SetIcon(m_hIcon, TRUE);			// 設定大圖示
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
 	// TODO:  在此加入額外的初始設定
-
+	Init();
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
 void CIPCClientDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
-	{
-		CAboutDlg dlgAbout;
-		dlgAbout.DoModal();
-	}
-	else
-	{
-		CDialogEx::OnSysCommand(nID, lParam);
-	}
+	CDialogEx::OnSysCommand(nID, lParam);
 }
 
 // 如果將最小化按鈕加入您的對話方塊，您需要下列的程式碼，
@@ -150,3 +95,48 @@ HCURSOR CIPCClientDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+void CIPCClientDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if (HeartBeatID == nIDEvent)
+	{
+		if (m_pSocketClient)
+		{
+			CString strMsg(_T("HeartBeat From Client"));
+			m_pSocketClient->Send(strMsg, strMsg.GetLength() * sizeof(TCHAR));
+		}
+	}
+}
+void CIPCClientDlg::Init()
+{
+	//set ip
+	CString strIP, strDlgCaption;
+	if (!CUtility::GetIP(strIP))
+		strIP = "";
+	GetWindowText(strDlgCaption);
+	strDlgCaption += _T("  Client IP : ") + strIP;
+	SetWindowText(strDlgCaption);
+
+	//set socket
+	if (!m_pSocketClient && strIP.GetLength() > 0){
+
+		if (!AfxSocketInit())
+			return;
+
+		m_pSocketClient = new CSocketClient();
+		if (!m_pSocketClient->Create())
+			return ;
+
+		if (!m_pSocketClient->Connect(strIP, SocketPort))
+			return;
+
+		this->SetTimer(HeartBeatID, 2000, NULL);
+	}
+}
+
+void CIPCClientDlg::Finalize()
+{
+	if (m_pSocketClient){
+		delete m_pSocketClient;
+		m_pSocketClient = NULL;
+	}
+}

@@ -3,7 +3,7 @@
 #include "DLLconst.h"
 
 
-class CSocketClient : public CSocket
+class IPCDLL_API CSocketClient : public CSocket
 {
 protected:
 	virtual void OnReceive(int nErrorCode);
