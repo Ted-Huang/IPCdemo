@@ -28,13 +28,21 @@ protected:
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnPaint();
+	afx_msg void OnBtnClick(UINT nID);
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 
 private:
 	void Init();
+	void InitCtrl();
 	void Finalize();
 
 private:
 	CSocketServer* m_pSocketServer;
+	CButton* m_pBtnSendMsg;
+	enum{
+		UI_POS_ITEM_BEGIN = 100,	//太小會遇到ID重複的狀況
+		UI_POS_BTN_SENDMSG,
+		UI_POS_BTN_SHAREDMEMORY
+	};
 };

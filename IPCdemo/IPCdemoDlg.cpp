@@ -8,7 +8,7 @@
 #include "afxdialogex.h"
 #include "Utility.h"
 #include "SocketServer.h"
-
+#include "Msg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,6 +37,7 @@ BEGIN_MESSAGE_MAP(CIPCdemoDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
+	ON_CONTROL_RANGE(BN_CLICKED, UI_POS_BTN_SENDMSG, UI_POS_BTN_SHAREDMEMORY, &OnBtnClick)
 END_MESSAGE_MAP()
 
 
@@ -51,6 +52,7 @@ BOOL CIPCdemoDlg::OnInitDialog()
 
 	// TODO:  在此加入額外的初始設定
 	Init();
+	InitCtrl();
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
@@ -149,10 +151,39 @@ void CIPCdemoDlg::Init()
 	}
 }
 
+void CIPCdemoDlg::InitCtrl()
+{
+	POINT ptBase = { 0, 0 };
+	POINT ptSize = { 0, 0 };
+	ptBase = { 10, 10 };
+	ptSize = { 90, 30 };
+	m_pBtnSendMsg = new CButton();
+	m_pBtnSendMsg->Create(_T("SendMsg"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_SENDMSG);
+}
+
 void CIPCdemoDlg::Finalize()
 {
 	if (m_pSocketServer){
 		delete m_pSocketServer;
 		m_pSocketServer = NULL;
+	}
+}
+
+
+void CIPCdemoDlg::OnBtnClick(UINT nID)
+{
+	switch (nID)
+	{
+	case UI_POS_BTN_SENDMSG:
+	{
+		HWND hwnd = ::FindWindow(_T("CIPCClientDlg"), NULL);
+		if (!hwnd)
+			return;
+		
+		::PostMessage(hwnd, WM_TESTSENDMSG_MSG, WM_TESTWPARAM, (LPARAM)10); //lparam
+		break;
+	}
+	default:
+		break;
 	}
 }
