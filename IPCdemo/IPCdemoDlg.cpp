@@ -127,6 +127,54 @@ void CIPCdemoDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CIPCdemoDlg::Init()
 {
+	InitSocket();
+
+	//set shared memory
+	                // name of mapping object
+	m_hMapFile = OpenFileMapping(
+		FILE_MAP_ALL_ACCESS,   // read/write access
+		FALSE,                 // do not inherit the name
+		SM_NAME);               // name of mapping object
+
+	if (!m_hMapFile)
+	{
+		TRACE(_T("open fail, create SM"));
+		m_hMapFile = CreateFileMapping(
+			INVALID_HANDLE_VALUE,    // use paging file
+			NULL,                    // default security
+			PAGE_READWRITE,          // read/write access
+			0,                       // maximum object size (high-order DWORD)
+			SM_BUF_SIZE,                // maximum object size (low-order DWORD)
+			SM_NAME);
+	}
+
+	if (!m_hMapFile)
+	{
+		CString strError;
+		strError.Format(_T("CreateFileMapping error %d"), GetLastError());
+		AfxMessageBox(strError);
+		return;
+	}
+	m_pBuf = MapViewOfFile(m_hMapFile,   // handle to map object
+		FILE_MAP_ALL_ACCESS, // read/write permission
+		0,
+		0,
+		SM_BUF_SIZE);
+
+	if (m_pBuf == NULL)
+	{
+		CString strError;
+		strError.Format(_T("MapViewOfFile error %d"), GetLastError());
+		AfxMessageBox(strError);
+
+		CloseHandle(m_hMapFile);
+
+		return;
+	}
+}
+
+void CIPCdemoDlg::InitSocket()
+{
 	//set ip
 	CString strIP, strDlgCaption;
 	if (!CUtility::GetIP(strIP))
@@ -134,19 +182,19 @@ void CIPCdemoDlg::Init()
 	GetWindowText(strDlgCaption);
 	strDlgCaption += _T("  Server IP : ") + strIP;
 	SetWindowText(strDlgCaption);
-	
+
 	//set socket
 	if (!m_pSocketServer && strIP.GetLength() > 0){
 
 		if (AfxSocketInit() == FALSE)
-			return ;
+			return;
 
 		m_pSocketServer = new CSocketServer();
 		if (!m_pSocketServer->Create(SocketPort, SOCK_STREAM, strIP))
-			return ;
+			return;
 
 		if (!m_pSocketServer->Listen())
-			return ;
+			return;
 
 		this->SetTimer(HeartBeatID, 2000, NULL);
 	}
@@ -164,12 +212,22 @@ void CIPCdemoDlg::InitCtrl()
 	ptBase = { 150, 10 };
 	ptSize = { 200, 70 };
 	m_pLbDebugString = new CListBox();
-	m_pLbDebugString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_DEBUGSTRING);
+	m_pLbDebugString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_DEBUGSTRING); 
+
+	ptBase = { 150, 90 };
+	ptSize = { 200, 70 };
+	m_pLbSMString = new CListBox();
+	m_pLbSMString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_SMSTRING);
 
 	ptBase = { 10, 50 };
 	ptSize = { 90, 30 };
 	m_pBtnClear = new CButton();
 	m_pBtnClear->Create(_T("Clear"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_CLEAR);
+
+	ptBase = { 10, 90 };
+	ptSize = { 120, 30 };
+	m_pBtnSharedMem = new CButton();
+	m_pBtnSharedMem->Create(_T("Shared memory"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_SHAREDMEMORY);
 }
 
 void CIPCdemoDlg::Finalize()
@@ -196,6 +254,28 @@ void CIPCdemoDlg::Finalize()
 		delete m_pBtnClear;
 		m_pBtnClear = NULL;
 	}
+
+	if (m_pBtnSharedMem){
+		m_pBtnSharedMem->DestroyWindow();
+		delete m_pBtnSharedMem;
+		m_pBtnSharedMem = NULL;
+	}
+
+	if (m_pLbSMString){
+		m_pLbSMString->DestroyWindow();
+		delete m_pLbSMString;
+		m_pLbSMString = NULL;
+	}
+
+	if (m_pBuf){
+		UnmapViewOfFile(m_pBuf);
+		m_pBuf = NULL;
+	}
+
+	if (m_hMapFile){
+		CloseHandle(m_hMapFile);
+		m_hMapFile = NULL;
+	}
 }
 
 LRESULT CIPCdemoDlg::OnIPCMsg(WPARAM wp, LPARAM lp)
@@ -214,17 +294,27 @@ LRESULT CIPCdemoDlg::OnIPCMsg(WPARAM wp, LPARAM lp)
 		m_pLbDebugString->SetCurSel(m_pLbDebugString->GetCount() - 1);
 		break;
 	}
-	case Cmd_SharedMemory:
-	{
-		TRACE(_T("rec!"));
+	case Cmd_SM_CString:
+		HandleSharedMemory(lp);
 		break;
-	}
 	default:
 		break;
 	}
 	return 1L;
 }
 
+void CIPCdemoDlg::HandleSharedMemory(LPARAM lp)
+{
+	if (!m_pLbSMString)
+		return ;
+
+	CString strMsg;
+	int i2;
+	memcpy(&i2, m_pBuf, (int)lp);
+	strMsg.Format(_T("%d"), i2);
+	m_pLbSMString->AddString(strMsg);
+	m_pLbSMString->SetCurSel(m_pLbSMString->GetCount() - 1);
+}
 
 void CIPCdemoDlg::OnBtnClick(UINT nID)
 {
@@ -244,6 +334,29 @@ void CIPCdemoDlg::OnBtnClick(UINT nID)
 		if (!m_pLbDebugString)
 			return;
 		m_pLbDebugString->ResetContent();
+
+		if (!m_pLbSMString)
+			return;
+
+		m_pLbSMString->ResetContent();
+		break;
+	}
+	case UI_POS_BTN_SHAREDMEMORY:
+	{
+		if (!m_hMapFile || !m_pBuf)
+			return;
+
+		HWND hwnd = ::FindWindow(_T("CIPCClientDlg"), NULL);
+		if (!hwnd)
+			return;
+
+		CString str;
+		str.Format(_T("test!!"));
+		int i = 75676546;
+		TRACE(_T("%d"), str.GetLength() * sizeof(TCHAR));
+		//memcpy(m_pBuf, str, str.GetLength() * sizeof(TCHAR));
+		memcpy(m_pBuf, &i, sizeof(i));
+		::PostMessage(hwnd, WM_IPC_MSG, Cmd_SM_CString, sizeof(int));
 		break;
 	}
 	default:

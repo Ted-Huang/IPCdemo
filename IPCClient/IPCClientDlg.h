@@ -39,6 +39,7 @@ private:
 	void InitSocket();
 	void InitCtrl();
 	void Finalize();
+	void HandleSharedMemory(LPARAM lp);
 
 private:
 	CSocketClient* m_pSocketClient;
@@ -46,6 +47,7 @@ private:
 	CButton* m_pBtnSharedMem;
 	CButton* m_pBtnClear;
 	CListBox* m_pLbDebugString;
+	CListBox* m_pLbSMString;
 	HANDLE m_hMapFile;
 	LPVOID m_pBuf;
 	enum{
@@ -59,6 +61,7 @@ private:
 		//LIST BOX
 		UI_POS_LB_BEGIN,
 		UI_POS_LB_DEBUGSTRING,
+		UI_POS_LB_SMSTRING,
 		UI_POS_LB_END,
 	};
 };

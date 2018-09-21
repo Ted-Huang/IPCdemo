@@ -6,12 +6,6 @@
 
 enum Msg_Cmd{
 	Cmd_Test,
-	Cmd_SharedMemory,
-
-};
-
-enum Msg_SubCmd{
-	SubCmd_Test,	//µL¥Î
-	SubCmd_SM_CString,
+	Cmd_SM_CString,
 
 };

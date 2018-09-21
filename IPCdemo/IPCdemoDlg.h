@@ -35,14 +35,19 @@ protected:
 
 private:
 	void Init();
+	void InitSocket();
 	void InitCtrl();
 	void Finalize();
-
+	void HandleSharedMemory(LPARAM lp);
 private:
 	CSocketServer* m_pSocketServer;
 	CButton* m_pBtnSendMsg;
 	CButton* m_pBtnClear;
+	CButton* m_pBtnSharedMem;
 	CListBox* m_pLbDebugString;
+	CListBox* m_pLbSMString;
+	HANDLE m_hMapFile;
+	LPVOID m_pBuf;
 	enum{
 		UI_POS_ITEM_BEGIN = 100,	//太小會遇到ID重複的狀況
 		//BTN
@@ -54,6 +59,7 @@ private:
 		//LIST BOX
 		UI_POS_LB_BEGIN,
 		UI_POS_LB_DEBUGSTRING,
+		UI_POS_LB_SMSTRING,
 		UI_POS_LB_END,
 	};
 };

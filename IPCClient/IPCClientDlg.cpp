@@ -200,6 +200,11 @@ void CIPCClientDlg::InitCtrl()
 	m_pBtnSharedMem = new CButton();
 	m_pBtnSharedMem->Create(_T("Shared memory"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_SHAREDMEMORY);
 
+	ptBase = { 150, 90 };
+	ptSize = { 200, 70 };
+	m_pLbSMString = new CListBox();
+	m_pLbSMString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_SMSTRING);
+
 }
 
 void CIPCClientDlg::Finalize()
@@ -232,10 +237,22 @@ void CIPCClientDlg::Finalize()
 		m_pBtnSharedMem = NULL;
 	}
 
+	if (m_pBuf){
+		UnmapViewOfFile(m_pBuf);
+		m_pBuf = NULL;
+	}
+
 	if (m_hMapFile){
 		CloseHandle(m_hMapFile);
 		m_hMapFile = NULL;
 	}
+
+	if (m_pBtnSharedMem){
+		m_pBtnSharedMem->DestroyWindow();
+		delete m_pBtnSharedMem;
+		m_pBtnSharedMem = NULL;
+	}
+
 }
 
 
@@ -255,9 +272,9 @@ LRESULT CIPCClientDlg::OnIPCMsg(WPARAM wp, LPARAM lp)
 			m_pLbDebugString->SetCurSel(m_pLbDebugString->GetCount() - 1);
 		break;
 	}
-	case Cmd_SharedMemory:
+	case Cmd_SM_CString:
 	{
-		TRACE(_T("rec!"));
+		HandleSharedMemory(lp);
 		break;
 	}
 	default:
@@ -285,6 +302,13 @@ void CIPCClientDlg::OnBtnClick(UINT nID)
 			return;
 
 		m_pLbDebugString->ResetContent();
+
+		if (!m_pLbSMString)
+			return;
+
+		m_pLbSMString->ResetContent();
+		break;
+
 		break;
 	}
 	case UI_POS_BTN_SHAREDMEMORY:
@@ -298,11 +322,27 @@ void CIPCClientDlg::OnBtnClick(UINT nID)
 
 		CString str;
 		str.Format(_T("test!!"));
-		memcpy(m_pBuf, str, str.GetLength() * sizeof(TCHAR));
-		::PostMessage(hwnd, WM_IPC_MSG, Cmd_SharedMemory, SubCmd_SM_CString); 
+		int i = 123;
+		TRACE(_T("%d"), str.GetLength() * sizeof(TCHAR));
+		//memcpy(m_pBuf, str, str.GetLength() * sizeof(TCHAR));
+		memcpy(m_pBuf, &i, sizeof(i));
+		::PostMessage(hwnd, WM_IPC_MSG, Cmd_SM_CString, sizeof(int));
 		break;
 	}
 	default:
 		break;
 	}
+}
+
+void CIPCClientDlg::HandleSharedMemory(LPARAM lp)
+{
+	if (!m_pLbSMString)
+		return;
+
+	CString strMsg;
+	int i2;
+	memcpy(&i2, m_pBuf, (int)lp);
+	strMsg.Format(_T("%d"), i2);
+	m_pLbSMString->AddString(strMsg);
+	m_pLbSMString->SetCurSel(m_pLbSMString->GetCount() - 1);
 }
