@@ -36,23 +36,19 @@ void CSocketServer::OnAccept(int nErrorCode)
 	TRACE(_T("Accept IP: %s Port: %d"), strIP, nPort);
 
 	// Start the other thread.
-	CSockThread* pSockThread = (CSockThread*)AfxBeginThread(
-		RUNTIME_CLASS(CSockThread), THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
-	if (NULL != pSockThread)
-	{
-		// Detach the newly accepted socket and save
-		// the SOCKET handle in our new thread object.
-		// After detaching it, it should no longer be
-		// used in the context of this thread.
-		pSockThread->m_hConnected = pSession->Detach();
-		pSockThread->ResumeThread();
-		m_arrSocketClient.Add(pSockThread);
-	}
+	CSockThread* pSockThread = (CSockThread*)AfxBeginThread(RUNTIME_CLASS(CSockThread), THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
+	if (!pSockThread)
+		return;
+
+	pSockThread->m_hConnected = pSession->m_hSocket;
+
+	m_arrSocketClient.Add(pSockThread);
+	pSockThread->ResumeThread();
 }
 
+IMPLEMENT_DYNCREATE(CSockThread, CWinThread)
 CSockThread::CSockThread()
 {
-	InitInstance();
 }
 
 CSockThread::~CSockThread()
@@ -65,10 +61,6 @@ CSockThread::~CSockThread()
 
 BOOL CSockThread::InitInstance()
 {
-	// Attach the socket object to the socket handle
-	// in the context of this thread.
-	m_sConnected.Attach(m_hConnected);
-	m_hConnected = NULL;
 
 	return TRUE;
 }

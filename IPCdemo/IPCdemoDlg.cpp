@@ -7,8 +7,8 @@
 #include "IPCdemoDlg.h"
 #include "afxdialogex.h"
 #include "Utility.h"
+#include "SocketServer.h"
 
-#pragma comment(lib, "..\\Debug\\IPCDll.lib")
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -22,6 +22,11 @@ CIPCdemoDlg::CIPCdemoDlg(CWnd* pParent /*=NULL*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
+CIPCdemoDlg::~CIPCdemoDlg()
+{
+	Finalize();
+}
+
 void CIPCdemoDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -31,6 +36,7 @@ BEGIN_MESSAGE_MAP(CIPCdemoDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -44,7 +50,7 @@ BOOL CIPCdemoDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
 	// TODO:  在此加入額外的初始設定
-	CUtility::GetIP();
+	Init();
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
@@ -89,3 +95,64 @@ HCURSOR CIPCdemoDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+void CIPCdemoDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if (HeartBeatID == nIDEvent)
+	{
+		if (!m_pSocketServer){
+			CDialog::OnTimer(nIDEvent);
+			return;
+		}
+
+		for (int index = 0; index < m_pSocketServer->m_arrSocketClient.GetSize(); index++)
+		{
+			CSockThread* pThread = (CSockThread*)m_pSocketServer->m_arrSocketClient.GetAt(index);
+			if (!pThread)
+			{
+				CDialog::OnTimer(nIDEvent);
+				return;
+			}
+
+			CString strMsg(_T("HeartBeat From Server!"));
+			if (pThread->m_hConnected && CSocket::FromHandle(pThread->m_hConnected))
+				CSocket::FromHandle(pThread->m_hConnected)->Send(strMsg, strMsg.GetLength() * sizeof(TCHAR));
+		}
+
+	}
+	CDialog::OnTimer(nIDEvent);
+}
+
+void CIPCdemoDlg::Init()
+{
+	//set ip
+	CString strIP, strDlgCaption;
+	if (!CUtility::GetIP(strIP))
+		strIP = "";
+	GetWindowText(strDlgCaption);
+	strDlgCaption += _T("  Server IP : ") + strIP;
+	SetWindowText(strDlgCaption);
+	
+	//set socket
+	if (!m_pSocketServer && strIP.GetLength() > 0){
+
+		if (AfxSocketInit() == FALSE)
+			return ;
+
+		m_pSocketServer = new CSocketServer();
+		if (!m_pSocketServer->Create(SocketPort, SOCK_STREAM, strIP))
+			return ;
+
+		if (!m_pSocketServer->Listen())
+			return ;
+
+		this->SetTimer(HeartBeatID, 2000, NULL);
+	}
+}
+
+void CIPCdemoDlg::Finalize()
+{
+	if (m_pSocketServer){
+		delete m_pSocketServer;
+		m_pSocketServer = NULL;
+	}
+}

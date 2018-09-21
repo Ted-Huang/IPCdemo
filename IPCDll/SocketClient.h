@@ -1,7 +1,7 @@
 #pragma once
 #include <afxsock.h>
+#include "DLLconst.h"
 
-#define SocketBuffer	1024
 
 class CSocketClient : public CSocket
 {

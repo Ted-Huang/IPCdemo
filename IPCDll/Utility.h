@@ -1,13 +1,10 @@
 #pragma once
+#include "DLLconst.h"
 
-#ifdef IPCDLL__EXPORTS
-#define IPCDLL__API  __declspec(dllexport) 
-#else
-#define IPCDLL__API  __declspec(dllimport) 
-#endif
 
-class CUtility
+class IPCDLL_API CUtility
 {
 public:
-	IPCDLL__API static CString GetIP();
+	static BOOL GetIP(CString& strIP);
 };
+

@@ -1,6 +1,8 @@
 #pragma once
+#include "SocketClient.h"
+#include "DLLconst.h"
 
-class CSocketServer : public CSocket
+class IPCDLL_API CSocketServer : public CSocket
 {
 public:
 	CSocketServer();
@@ -11,20 +13,16 @@ public:
 	CPtrArray m_arrSocketClient;
 };
 
-
-class CSockThread : public CWinThread
+class IPCDLL_API CSockThread : public CWinThread
 {
+	DECLARE_DYNCREATE(CSockThread)
 public:
 	CSockThread();
 	~CSockThread();
 
-	BOOL InitInstance();
+	virtual BOOL InitInstance();
 
 	SOCKET m_hConnected;
 
 protected:
-	CSocketClient m_sConnected;
-
-private:
-	
 };
