@@ -3,9 +3,6 @@
 // 由 IPCdemo.rc 使用
 //
 #define IDR_MAINFRAME					128
-#define IDM_ABOUTBOX					0x0010
-#define IDD_ABOUTBOX					100
-#define IDS_ABOUTBOX					101
 #define IDD_IPCDEMO_DIALOG				102
 
 // 下一個新增物件的預設值
