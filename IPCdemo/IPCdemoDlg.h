@@ -44,6 +44,7 @@ private:
 	CButton* m_pBtnSendMsg;
 	CButton* m_pBtnClear;
 	CButton* m_pBtnSharedMem;
+	CEdit* m_EdSharedMem;
 	CListBox* m_pLbDebugString;
 	CListBox* m_pLbSMString;
 	HANDLE m_hMapFile;
@@ -61,5 +62,10 @@ private:
 		UI_POS_LB_DEBUGSTRING,
 		UI_POS_LB_SMSTRING,
 		UI_POS_LB_END,
+		//EDIT
+		UI_POS_ED_BEGIN,
+		UI_POS_ED_SHAREDMEMORY,
+		UI_POS_ED_END,
+		UI_POS_ITEM_END
 	};
 };

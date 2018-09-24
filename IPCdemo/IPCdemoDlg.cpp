@@ -209,12 +209,12 @@ void CIPCdemoDlg::InitCtrl()
 	m_pBtnSendMsg = new CButton();
 	m_pBtnSendMsg->Create(_T("SendMsg"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_SENDMSG);
 
-	ptBase = { 150, 10 };
+	ptBase = { 250, 10 };
 	ptSize = { 200, 70 };
 	m_pLbDebugString = new CListBox();
 	m_pLbDebugString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_DEBUGSTRING); 
 
-	ptBase = { 150, 90 };
+	ptBase = { 250, 90 };
 	ptSize = { 200, 70 };
 	m_pLbSMString = new CListBox();
 	m_pLbSMString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_SMSTRING);
@@ -228,6 +228,11 @@ void CIPCdemoDlg::InitCtrl()
 	ptSize = { 120, 30 };
 	m_pBtnSharedMem = new CButton();
 	m_pBtnSharedMem->Create(_T("Shared memory"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_SHAREDMEMORY);
+
+	ptBase = { 150, 90 };
+	ptSize = { 80, 30 };
+	m_EdSharedMem = new CEdit();
+	m_EdSharedMem->Create(WS_CHILD | WS_VISIBLE | WS_BORDER, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_ED_SHAREDMEMORY);
 }
 
 void CIPCdemoDlg::Finalize()
@@ -275,6 +280,12 @@ void CIPCdemoDlg::Finalize()
 	if (m_hMapFile){
 		CloseHandle(m_hMapFile);
 		m_hMapFile = NULL;
+	}
+
+	if (m_EdSharedMem) {
+		m_EdSharedMem->DestroyWindow();
+		delete m_EdSharedMem;
+		m_EdSharedMem = NULL;
 	}
 }
 
@@ -344,20 +355,25 @@ void CIPCdemoDlg::OnBtnClick(UINT nID)
 	}
 	case UI_POS_BTN_SHAREDMEMORY:
 	{
-		if (!m_hMapFile || !m_pBuf)
+		if (!m_hMapFile || !m_pBuf || !m_EdSharedMem)
 			return;
 
 		HWND hwnd = ::FindWindow(_T("CIPCClientDlg"), NULL);
 		if (!hwnd)
 			return;
 
-		CString str;
-		str.Format(_T("test!!"));
-		int i = 75676546;
-		TRACE(_T("%d"), str.GetLength() * sizeof(TCHAR));
-		//memcpy(m_pBuf, str, str.GetLength() * sizeof(TCHAR));
-		memcpy(m_pBuf, &i, sizeof(i));
-		::PostMessage(hwnd, WM_IPC_MSG, Cmd_SM_CString, sizeof(int));
+		CString strMsg;
+		m_EdSharedMem->GetWindowText(strMsg);
+
+		if (strMsg.GetLength() == 0)
+			return;
+		char* szTemp[MAX_PATH];
+		memset(szTemp, 0, MAX_PATH);
+		memcpy(szTemp, strMsg.GetBuffer(), strMsg.GetLength() * sizeof(TCHAR));
+		TRACE(_T("%d %s"), strMsg.GetLength() * sizeof(TCHAR), szTemp);
+		//memcpy(m_pBuf, strMsg.GetBuffer(), strMsg.GetLength() * sizeof(TCHAR));
+		memcpy(m_pBuf, szTemp, MAX_PATH);
+		::PostMessage(hwnd, WM_IPC_MSG, Cmd_SM_CString, strMsg.GetLength() * sizeof(TCHAR));
 		break;
 	}
 	default:

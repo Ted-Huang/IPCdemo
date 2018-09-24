@@ -353,11 +353,11 @@ void CIPCClientDlg::HandleSharedMemory(LPARAM lp)
 	if (!m_pLbSMString)
 		return;
 
-	CString strMsg;
-	
-	int i2;
-	memcpy(&i2, m_pBuf, (int)lp);
-	strMsg.Format(_T("%d"), i2);
+	CString strMsg, str2;
+	char* szTemp[MAX_PATH];
+	memset(szTemp, 0, MAX_PATH);
+	memcpy(szTemp, m_pBuf, int(lp));
+	strMsg.Format(_T("%s"), szTemp);
 	m_pLbSMString->AddString(strMsg);
 	m_pLbSMString->SetCurSel(m_pLbSMString->GetCount() - 1);
 }
