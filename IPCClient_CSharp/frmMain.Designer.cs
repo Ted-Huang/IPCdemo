@@ -1,6 +1,6 @@
 ﻿namespace IPCClient_CSharp
 {
-    partial class Form1
+    partial class frmMain
     {
         /// <summary>
         /// 設計工具所需的變數。

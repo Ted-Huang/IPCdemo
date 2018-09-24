@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IPCServer", "IPCdemo\IPCdemo.vcxproj", "{BABDF259-4E3F-4AAC-903E-784DD486420B}"
 EndProject
@@ -9,24 +9,42 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IPCDll", "IPCDll\IPCDll.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IPCClient", "IPCClient\IPCClient.vcxproj", "{B1336385-FE59-4F7F-A8F7-DCE818BDD8B7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCClient_CSharp", "IPCClient_CSharp\IPCClient_CSharp.csproj", "{C1214D89-2F4A-40A7-BF1D-D31E2A205DB4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BABDF259-4E3F-4AAC-903E-784DD486420B}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{BABDF259-4E3F-4AAC-903E-784DD486420B}.Debug|Win32.ActiveCfg = Debug|Win32
 		{BABDF259-4E3F-4AAC-903E-784DD486420B}.Debug|Win32.Build.0 = Debug|Win32
+		{BABDF259-4E3F-4AAC-903E-784DD486420B}.Release|Any CPU.ActiveCfg = Release|Win32
 		{BABDF259-4E3F-4AAC-903E-784DD486420B}.Release|Win32.ActiveCfg = Release|Win32
 		{BABDF259-4E3F-4AAC-903E-784DD486420B}.Release|Win32.Build.0 = Release|Win32
+		{C6D559D0-3D13-4934-ADC1-3E00DE10EAC7}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{C6D559D0-3D13-4934-ADC1-3E00DE10EAC7}.Debug|Win32.ActiveCfg = Debug|Win32
 		{C6D559D0-3D13-4934-ADC1-3E00DE10EAC7}.Debug|Win32.Build.0 = Debug|Win32
+		{C6D559D0-3D13-4934-ADC1-3E00DE10EAC7}.Release|Any CPU.ActiveCfg = Release|Win32
 		{C6D559D0-3D13-4934-ADC1-3E00DE10EAC7}.Release|Win32.ActiveCfg = Release|Win32
 		{C6D559D0-3D13-4934-ADC1-3E00DE10EAC7}.Release|Win32.Build.0 = Release|Win32
+		{B1336385-FE59-4F7F-A8F7-DCE818BDD8B7}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{B1336385-FE59-4F7F-A8F7-DCE818BDD8B7}.Debug|Win32.ActiveCfg = Debug|Win32
 		{B1336385-FE59-4F7F-A8F7-DCE818BDD8B7}.Debug|Win32.Build.0 = Debug|Win32
+		{B1336385-FE59-4F7F-A8F7-DCE818BDD8B7}.Release|Any CPU.ActiveCfg = Release|Win32
 		{B1336385-FE59-4F7F-A8F7-DCE818BDD8B7}.Release|Win32.ActiveCfg = Release|Win32
 		{B1336385-FE59-4F7F-A8F7-DCE818BDD8B7}.Release|Win32.Build.0 = Release|Win32
+		{C1214D89-2F4A-40A7-BF1D-D31E2A205DB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1214D89-2F4A-40A7-BF1D-D31E2A205DB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1214D89-2F4A-40A7-BF1D-D31E2A205DB4}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{C1214D89-2F4A-40A7-BF1D-D31E2A205DB4}.Debug|Win32.Build.0 = Debug|Any CPU
+		{C1214D89-2F4A-40A7-BF1D-D31E2A205DB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1214D89-2F4A-40A7-BF1D-D31E2A205DB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1214D89-2F4A-40A7-BF1D-D31E2A205DB4}.Release|Win32.ActiveCfg = Release|Any CPU
+		{C1214D89-2F4A-40A7-BF1D-D31E2A205DB4}.Release|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
