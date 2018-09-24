@@ -36,7 +36,8 @@ protected:
 
 private:
 	void Init();
-	void InitSocket();
+	void OnInitSocket();
+	void OnSocketSend();
 	void InitCtrl();
 	void Finalize();
 	void HandleSharedMemory(LPARAM lp);
@@ -47,12 +48,14 @@ private:
 	CButton* m_pBtnSharedMem;
 	CButton* m_pBtnClear;
 	CButton* m_pBtnConnect;
+	CButton* m_pBtnSendSocket;
 	CListBox* m_pLbDebugString;
 	CListBox* m_pLbSMString;
 	CListBox* m_pLbSocketString;
 	CEdit* m_EdSharedMem;
 	CEdit* m_EdServerIP;
 	CEdit* m_EdServerPort;
+	CEdit* m_EdSocketMsg;
 	HANDLE m_hMapFile;
 	LPVOID m_pBuf;
 	enum{
@@ -63,6 +66,7 @@ private:
 		UI_POS_BTN_SHAREDMEMORY,
 		UI_POS_BTN_CLEAR,
 		UI_POS_BTN_CONNECT,
+		UI_POS_BTN_SOCKETSEND,
 		UI_POS_BTN_END,
 		//LIST BOX
 		UI_POS_LB_BEGIN,
@@ -75,6 +79,7 @@ private:
 		UI_POS_ED_SHAREDMEMORY,
 		UI_POS_ED_SERVERIP,
 		UI_POS_ED_SERVERPORT,
+		UI_POS_ED_SOCKETMSG,
 		UI_POS_ED_END,
 		UI_POS_ITEM_END
 	};

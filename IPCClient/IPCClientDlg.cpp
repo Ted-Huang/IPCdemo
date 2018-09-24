@@ -110,7 +110,7 @@ void CIPCClientDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 }
 
-void CIPCClientDlg::InitSocket()
+void CIPCClientDlg::OnInitSocket()
 {
 	CString strIP, strPort, strDlgCaption, strMsg;
 	if (!m_EdServerIP || !m_EdServerPort)
@@ -202,6 +202,12 @@ void CIPCClientDlg::InitCtrl()
 	m_pBtnConnect = new CButton();
 	m_pBtnConnect->Create(_T("Connect"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_CONNECT);
 	
+	ptBase = { 10, 250 };
+	ptSize = { 120, 30 };
+	m_pBtnSendSocket = new CButton();
+	m_pBtnSendSocket->Create(_T("Socket Send"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_SOCKETSEND);
+
+
 	ptBase = { 260, 10 };
 	ptSize = { 200, 70 };
 	m_pLbDebugString = new CListBox();
@@ -239,6 +245,13 @@ void CIPCClientDlg::InitCtrl()
 	m_EdServerPort->Create(WS_CHILD | WS_VISIBLE | WS_BORDER, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_ED_SERVERPORT);
 	strPort.Format(_T("%d"), SocketPort);
 	m_EdServerPort->SetWindowText(strPort);
+
+
+	ptBase = { 150, 250 };
+	ptSize = { 100, 30 };
+	m_EdSocketMsg = new CEdit();
+	m_EdSocketMsg->Create(WS_CHILD | WS_VISIBLE | WS_BORDER, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_ED_SOCKETMSG);
+	
 	
 }
 
@@ -315,6 +328,18 @@ void CIPCClientDlg::Finalize()
 		m_pLbSocketString->DestroyWindow();
 		delete m_pLbSocketString;
 		m_pLbSocketString = NULL;
+	}
+
+	if (m_pBtnSendSocket) {
+		m_pBtnSendSocket->DestroyWindow();
+		delete m_pBtnSendSocket;
+		m_pBtnSendSocket = NULL;
+	}
+
+	if (m_EdSocketMsg) {
+		m_EdSocketMsg->DestroyWindow();
+		delete m_EdSocketMsg;
+		m_EdSocketMsg = NULL;
 	}
 
 }
@@ -395,7 +420,10 @@ void CIPCClientDlg::OnBtnClick(UINT nID)
 		break;
 	}
 	case UI_POS_BTN_CONNECT:
-		InitSocket();
+		OnInitSocket();
+		break;
+	case UI_POS_BTN_SOCKETSEND:
+		OnSocketSend();
 		break;
 	default:
 		break;
@@ -414,4 +442,18 @@ void CIPCClientDlg::HandleSharedMemory(LPARAM lp)
 	strMsg = (LPWSTR)szTemp;
 	m_pLbSMString->AddString(strMsg);
 	m_pLbSMString->SetCurSel(m_pLbSMString->GetCount() - 1);
+}
+
+void CIPCClientDlg::OnSocketSend()
+{
+	if (!m_pSocketClient || !m_EdSocketMsg)
+		return;
+
+	CString strMsg;
+	m_EdSocketMsg->GetWindowText(strMsg);
+
+	if (strMsg.GetLength() == 0)
+		return;
+
+	m_pSocketClient->Send(strMsg.GetBuffer(), strMsg.GetLength() * sizeof(TCHAR));
 }
