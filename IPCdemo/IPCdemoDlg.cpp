@@ -372,10 +372,10 @@ void CIPCdemoDlg::OnBtnClick(UINT nID)
 	{
 	case UI_POS_BTN_SENDMSG:
 	{
-		HWND hwnd = ::FindWindow(_T("CIPCClientDlg"), NULL);
+		//HWND hwnd = ::FindWindow(_T("CIPCClientDlg"), NULL);
+		HWND hwnd = ::FindWindow(NULL, _T("Form1"));
 		if (!hwnd)
 			return;
-		
 		::PostMessage(hwnd, WM_IPC_MSG, Cmd_Test, (LPARAM)10); //lparam
 		break;
 	}
