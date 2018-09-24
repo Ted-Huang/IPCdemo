@@ -211,15 +211,21 @@ void CIPCdemoDlg::InitCtrl()
 	m_pBtnSendMsg = new CButton();
 	m_pBtnSendMsg->Create(_T("SendMsg"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_SENDMSG);
 
-	ptBase = { 250, 10 };
+	ptBase = { 260, 10 };
 	ptSize = { 200, 70 };
 	m_pLbDebugString = new CListBox();
 	m_pLbDebugString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_DEBUGSTRING); 
 
-	ptBase = { 250, 90 };
+	ptBase = { 260, 90 };
 	ptSize = { 200, 70 };
 	m_pLbSMString = new CListBox();
 	m_pLbSMString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_SMSTRING);
+
+	ptBase = { 260, 170 };
+	ptSize = { 200, 70 };
+	m_pLbSocketString = new CListBox();
+	m_pLbSocketString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_SOCKETSTRING);
+
 
 	ptBase = { 10, 50 };
 	ptSize = { 90, 30 };
@@ -288,6 +294,12 @@ void CIPCdemoDlg::Finalize()
 		m_EdSharedMem->DestroyWindow();
 		delete m_EdSharedMem;
 		m_EdSharedMem = NULL;
+	}
+
+	if (m_pLbSocketString) {
+		m_pLbSocketString->DestroyWindow();
+		delete m_pLbSocketString;
+		m_pLbSocketString = NULL;
 	}
 }
 

@@ -202,15 +202,21 @@ void CIPCClientDlg::InitCtrl()
 	m_pBtnConnect = new CButton();
 	m_pBtnConnect->Create(_T("Connect"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_CONNECT);
 	
-	ptBase = { 250, 10 };
+	ptBase = { 260, 10 };
 	ptSize = { 200, 70 };
 	m_pLbDebugString = new CListBox();
 	m_pLbDebugString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_DEBUGSTRING);
 
-	ptBase = { 250, 90 };
+	ptBase = { 260, 90 };
 	ptSize = { 200, 70 };
 	m_pLbSMString = new CListBox();
 	m_pLbSMString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_SMSTRING);
+
+
+	ptBase = { 260, 170 };
+	ptSize = { 200, 70 };
+	m_pLbSocketString = new CListBox();
+	m_pLbSocketString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_SOCKETSTRING);
 
 	ptBase = { 150, 90 };
 	ptSize = { 80, 30 };
@@ -304,6 +310,13 @@ void CIPCClientDlg::Finalize()
 		delete m_pBtnConnect;
 		m_pBtnConnect = NULL;
 	}
+
+	if (m_pLbSocketString) {
+		m_pLbSocketString->DestroyWindow();
+		delete m_pLbSocketString;
+		m_pLbSocketString = NULL;
+	}
+
 }
 
 LRESULT CIPCClientDlg::OnIPCMsg(WPARAM wp, LPARAM lp)

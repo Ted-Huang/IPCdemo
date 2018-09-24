@@ -49,6 +49,7 @@ private:
 	CButton* m_pBtnConnect;
 	CListBox* m_pLbDebugString;
 	CListBox* m_pLbSMString;
+	CListBox* m_pLbSocketString;
 	CEdit* m_EdSharedMem;
 	CEdit* m_EdServerIP;
 	CEdit* m_EdServerPort;
@@ -67,6 +68,7 @@ private:
 		UI_POS_LB_BEGIN,
 		UI_POS_LB_DEBUGSTRING,
 		UI_POS_LB_SMSTRING,
+		UI_POS_LB_SOCKETSTRING,
 		UI_POS_LB_END,
 		//EDIT
 		UI_POS_ED_BEGIN,
