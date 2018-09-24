@@ -334,10 +334,13 @@ void CIPCClientDlg::OnBtnClick(UINT nID)
 
 		if (strMsg.GetLength() == 0)
 			return;
-
-		TRACE(_T("%d"), strMsg.GetLength() * sizeof(TCHAR));
-		memcpy(m_pBuf, strMsg.GetBuffer(), strMsg.GetLength() * sizeof(TCHAR));
-		::PostMessage(hwnd, WM_IPC_MSG, Cmd_SM_CString, strMsg.GetLength());
+		char* szTemp[MAX_PATH];
+		memset(szTemp, 0, MAX_PATH);
+		memcpy(szTemp, strMsg.GetBuffer(), strMsg.GetLength() * sizeof(TCHAR));
+		TRACE(_T("%d %s"), strMsg.GetLength() * sizeof(TCHAR), szTemp);
+		//memcpy(m_pBuf, strMsg.GetBuffer(), strMsg.GetLength() * sizeof(TCHAR));
+		memcpy(m_pBuf, szTemp, MAX_PATH);
+		::PostMessage(hwnd, WM_IPC_MSG, Cmd_SM_CString, strMsg.GetLength() * sizeof(TCHAR));
 		break;
 	}
 	default:
@@ -351,6 +354,7 @@ void CIPCClientDlg::HandleSharedMemory(LPARAM lp)
 		return;
 
 	CString strMsg;
+	
 	int i2;
 	memcpy(&i2, m_pBuf, (int)lp);
 	strMsg.Format(_T("%d"), i2);
