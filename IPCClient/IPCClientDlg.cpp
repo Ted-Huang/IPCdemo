@@ -125,7 +125,7 @@ void CIPCClientDlg::OnInitSocket()
 		if (!AfxSocketInit())
 			return;
 
-		m_pSocketClient = new CSocketClient();
+		m_pSocketClient = new CSocketClient(this);
 		if (!m_pSocketClient->Create())
 			return;
 
@@ -395,8 +395,11 @@ void CIPCClientDlg::OnBtnClick(UINT nID)
 			return;
 
 		m_pLbSMString->ResetContent();
-		break;
 
+		if (!m_pLbSocketString)
+			return;
+
+		m_pLbSocketString->ResetContent();
 		break;
 	}
 	case UI_POS_BTN_SHAREDMEMORY:
@@ -456,4 +459,24 @@ void CIPCClientDlg::OnSocketSend()
 		return;
 
 	m_pSocketClient->Send(strMsg.GetBuffer(), strMsg.GetLength() * sizeof(TCHAR));
+}
+
+
+void CIPCClientDlg::OnSocketCallBack(SocketEventType eType, CString strMsg)
+{
+	CString strType;
+	switch (eType)
+	{
+	case $ST_Accept:
+		strType = _T("連線成功:");
+		break;
+	case $ST_Receive:
+		strType = _T("收到:");
+		break;
+	}
+
+	if (!m_pLbSocketString)
+		return;
+	m_pLbSocketString->AddString(strType + strMsg);
+	m_pLbSocketString->SetCurSel(m_pLbSocketString->GetCount() - 1);
 }

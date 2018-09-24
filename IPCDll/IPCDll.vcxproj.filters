@@ -45,6 +45,9 @@
     <ClInclude Include="DLLconst.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="SocketCallBack.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

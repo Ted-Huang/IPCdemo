@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "SocketServer.h"
+#include "SocketCallBack.h"
 
 class CSocketServer;
 class CIPCdemoDlg : public CDialogEx, public SOCKET_CALLBACK
@@ -32,6 +32,7 @@ protected:
 	afx_msg LRESULT OnIPCMsg(WPARAM wp, LPARAM lp);
 	afx_msg HCURSOR OnQueryDragIcon();
 	void OnSocketCallBack(SocketEventType eType, CString strMsg);
+	void OnSocketSend();
 	DECLARE_MESSAGE_MAP()
 
 private:
@@ -45,7 +46,9 @@ private:
 	CButton* m_pBtnSendMsg;
 	CButton* m_pBtnClear;
 	CButton* m_pBtnSharedMem;
+	CButton* m_pBtnSendSocket;
 	CEdit* m_EdSharedMem;
+	CEdit* m_EdSocketMsg;
 	CListBox* m_pLbDebugString;
 	CListBox* m_pLbSMString;
 	CListBox* m_pLbSocketString;
@@ -58,6 +61,7 @@ private:
 		UI_POS_BTN_SENDMSG,
 		UI_POS_BTN_SHAREDMEMORY,
 		UI_POS_BTN_CLEAR,
+		UI_POS_BTN_SOCKETSEND,
 		UI_POS_BTN_END,
 		//LIST BOX
 		UI_POS_LB_BEGIN,
@@ -68,6 +72,7 @@ private:
 		//EDIT
 		UI_POS_ED_BEGIN,
 		UI_POS_ED_SHAREDMEMORY,
+		UI_POS_ED_SOCKETMSG,
 		UI_POS_ED_END,
 		UI_POS_ITEM_END
 	};

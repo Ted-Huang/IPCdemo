@@ -3,11 +3,11 @@
 //
 
 #pragma once
-
+#include "SocketCallBack.h"
 
 // CIPCClientDlg 對話方塊
 class CSocketClient;
-class CIPCClientDlg : public CDialogEx
+class CIPCClientDlg : public CDialogEx, public SOCKET_CALLBACK
 {
 // 建構
 public:
@@ -32,6 +32,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg LRESULT OnIPCMsg(WPARAM wp, LPARAM lp);
 	afx_msg void OnBtnClick(UINT nID);
+	void OnSocketCallBack(SocketEventType eType, CString strMsg);
 	DECLARE_MESSAGE_MAP()
 
 private:

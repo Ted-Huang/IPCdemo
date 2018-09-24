@@ -24,7 +24,7 @@ CSocketServer::~CSocketServer()
 
 void CSocketServer::OnAccept(int nErrorCode)
 {
-	CSocketClient* pSession = new CSocketClient();
+	CSocketClient* pSession = new CSocketClient(m_pCallBack);
 	if (!Accept(*pSession))
 	{
 		TRACE(_T("Cannot Accept Connection"));

@@ -237,10 +237,22 @@ void CIPCdemoDlg::InitCtrl()
 	m_pBtnSharedMem = new CButton();
 	m_pBtnSharedMem->Create(_T("Shared memory"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_SHAREDMEMORY);
 
+	ptBase = { 10, 170 };
+	ptSize = { 120, 30 };
+	m_pBtnSendSocket = new CButton();
+	m_pBtnSendSocket->Create(_T("Socket Send"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_SOCKETSEND);
+
+
 	ptBase = { 150, 90 };
 	ptSize = { 80, 30 };
 	m_EdSharedMem = new CEdit();
 	m_EdSharedMem->Create(WS_CHILD | WS_VISIBLE | WS_BORDER, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_ED_SHAREDMEMORY);
+
+	ptBase = { 150, 170 };
+	ptSize = { 100, 30 };
+	m_EdSocketMsg = new CEdit();
+	m_EdSocketMsg->Create(WS_CHILD | WS_VISIBLE | WS_BORDER, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_ED_SOCKETMSG);
+
 }
 
 void CIPCdemoDlg::Finalize()
@@ -300,6 +312,18 @@ void CIPCdemoDlg::Finalize()
 		m_pLbSocketString->DestroyWindow();
 		delete m_pLbSocketString;
 		m_pLbSocketString = NULL;
+	}
+	
+	if (m_pBtnSendSocket) {
+			m_pBtnSendSocket->DestroyWindow();
+			delete m_pBtnSendSocket;
+			m_pBtnSendSocket = NULL;
+		}
+
+	if (m_EdSocketMsg) {
+		m_EdSocketMsg->DestroyWindow();
+		delete m_EdSocketMsg;
+		m_EdSocketMsg = NULL;
 	}
 }
 
@@ -365,6 +389,11 @@ void CIPCdemoDlg::OnBtnClick(UINT nID)
 			return;
 
 		m_pLbSMString->ResetContent();
+
+		if (!m_pLbSocketString)
+			return;
+
+		m_pLbSocketString->ResetContent();
 		break;
 	}
 	case UI_POS_BTN_SHAREDMEMORY:
@@ -387,6 +416,9 @@ void CIPCdemoDlg::OnBtnClick(UINT nID)
 		::PostMessage(hwnd, WM_IPC_MSG, Cmd_SM_CString, strMsg.GetLength() * sizeof(TCHAR));
 		break;
 	}
+	case UI_POS_BTN_SOCKETSEND:
+		OnSocketSend();
+		break;
 	default:
 		break;
 	}
@@ -394,16 +426,41 @@ void CIPCdemoDlg::OnBtnClick(UINT nID)
 
 void CIPCdemoDlg::OnSocketCallBack(SocketEventType eType, CString strMsg)
 {
-	
+	CString strType;
 	switch (eType)
 	{
 	case $ST_Accept:
-		if (!m_pLbSocketString)
-			return;
-		m_pLbSocketString->AddString(strMsg);
-		m_pLbSocketString->SetCurSel(m_pLbSocketString->GetCount() - 1);
+		strType = _T("連線成功:");
 		break;
 	case $ST_Receive:
+		strType = _T("收到:");
 		break;
+	}
+
+	if (!m_pLbSocketString)
+		return;
+	m_pLbSocketString->AddString(strType + strMsg);
+	m_pLbSocketString->SetCurSel(m_pLbSocketString->GetCount() - 1);
+}
+
+void CIPCdemoDlg::OnSocketSend()
+{
+	if (!m_pSocketServer || !m_EdSocketMsg)
+		return;
+
+	CString strMsg;
+	m_EdSocketMsg->GetWindowText(strMsg);
+
+	if (strMsg.GetLength() == 0)
+		return;
+
+	for (int index = 0; index < m_pSocketServer->m_arrSocketClient.GetSize(); index++)
+	{
+		CSockThread* pThread = (CSockThread*)m_pSocketServer->m_arrSocketClient.GetAt(index);
+		if (!pThread)
+			return;
+
+		if (pThread->m_hConnected && CSocket::FromHandle(pThread->m_hConnected))
+			CSocket::FromHandle(pThread->m_hConnected)->Send(strMsg.GetBuffer(), strMsg.GetLength() * sizeof(TCHAR));
 	}
 }
