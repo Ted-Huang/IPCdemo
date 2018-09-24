@@ -176,12 +176,9 @@ void CIPCdemoDlg::Init()
 void CIPCdemoDlg::InitSocket()
 {
 	//set ip
-	CString strIP, strDlgCaption;
+	CString strIP, strDlgCaption, strMsg;
 	if (!CUtility::GetIP(strIP))
 		strIP = "";
-	GetWindowText(strDlgCaption);
-	strDlgCaption += _T("  Server IP : ") + strIP;
-	SetWindowText(strDlgCaption);
 
 	//set socket
 	if (!m_pSocketServer && strIP.GetLength() > 0){
@@ -198,6 +195,11 @@ void CIPCdemoDlg::InitSocket()
 
 		this->SetTimer(HeartBeatID, 2000, NULL);
 	}
+
+	GetWindowText(strDlgCaption);
+	strMsg.Format(_T(" Server IP : %s, Port: %d"), strIP, SocketPort);
+	strDlgCaption += strMsg;
+	SetWindowText(strDlgCaption);
 }
 
 void CIPCdemoDlg::InitCtrl()

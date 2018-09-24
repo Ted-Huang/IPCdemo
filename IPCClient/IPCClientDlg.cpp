@@ -112,16 +112,15 @@ void CIPCClientDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CIPCClientDlg::InitSocket()
 {
-	//set ip
-	CString strIP, strDlgCaption;
-	if (!CUtility::GetIP(strIP))
-		strIP = "";
-	GetWindowText(strDlgCaption);
-	strDlgCaption += _T("  Client IP : ") + strIP;
-	SetWindowText(strDlgCaption);
+	CString strIP, strPort, strDlgCaption, strMsg;
+	if (!m_EdServerIP || !m_EdServerPort)
+		return;
+
+	m_EdServerIP->GetWindowText(strIP);
+	m_EdServerPort->GetWindowText(strPort);
 
 	//set socket
-	if (!m_pSocketClient && strIP.GetLength() > 0){
+	if (!m_pSocketClient && strIP.GetLength() > 0 && strPort.GetLength() > 0){
 
 		if (!AfxSocketInit())
 			return;
@@ -130,18 +129,20 @@ void CIPCClientDlg::InitSocket()
 		if (!m_pSocketClient->Create())
 			return;
 
-		if (!m_pSocketClient->Connect(strIP, SocketPort))
+		if (!m_pSocketClient->Connect(strIP, _ttoi(strPort)))
 			return;
 
 		this->SetTimer(HeartBeatID, 2000, NULL);
 	}
+
+	GetWindowText(strDlgCaption);
+	strMsg.Format(_T(" Server IP : %s, Port: %s"), strIP, strPort);
+	strDlgCaption += strMsg;
+	SetWindowText(strDlgCaption);
 }
 
 void CIPCClientDlg::Init()
 {
-	InitSocket();
-
-
 	m_hMapFile = CreateFileMapping(
 		INVALID_HANDLE_VALUE,    // use paging file
 		NULL,                    // default security
@@ -195,6 +196,12 @@ void CIPCClientDlg::InitCtrl()
 	m_pBtnSharedMem = new CButton();
 	m_pBtnSharedMem->Create(_T("Shared memory"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_SHAREDMEMORY);
 
+
+	ptBase = { 10, 170 };
+	ptSize = { 120, 30 };
+	m_pBtnConnect = new CButton();
+	m_pBtnConnect->Create(_T("Connect"), WS_CHILD | WS_VISIBLE, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_BTN_CONNECT);
+	
 	ptBase = { 250, 10 };
 	ptSize = { 200, 70 };
 	m_pLbDebugString = new CListBox();
@@ -209,6 +216,23 @@ void CIPCClientDlg::InitCtrl()
 	ptSize = { 80, 30 };
 	m_EdSharedMem = new CEdit();
 	m_EdSharedMem->Create(WS_CHILD | WS_VISIBLE | WS_BORDER , CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_ED_SHAREDMEMORY);
+
+	ptBase = { 150, 170 };
+	ptSize = { 100, 30 };
+	m_EdServerIP = new CEdit();
+	m_EdServerIP->Create(WS_CHILD | WS_VISIBLE | WS_BORDER, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_ED_SERVERIP);
+	CString strIP, strPort;
+	if (!CUtility::GetIP(strIP))
+		strIP = "";
+
+	m_EdServerIP->SetWindowText(strIP);
+
+	ptBase = { 150, 210 };
+	ptSize = { 100, 30 };
+	m_EdServerPort = new CEdit();
+	m_EdServerPort->Create(WS_CHILD | WS_VISIBLE | WS_BORDER, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_ED_SERVERPORT);
+	strPort.Format(_T("%d"), SocketPort);
+	m_EdServerPort->SetWindowText(strPort);
 	
 }
 
@@ -262,6 +286,23 @@ void CIPCClientDlg::Finalize()
 		m_EdSharedMem->DestroyWindow();
 		delete m_EdSharedMem;
 		m_EdSharedMem = NULL;
+	}
+
+	if (m_EdServerIP){
+		m_EdServerIP->DestroyWindow();
+		delete m_EdServerIP;
+		m_EdServerIP = NULL;
+	}
+
+	if (m_EdServerPort) {
+		m_EdServerPort->DestroyWindow();
+		delete m_EdServerPort;
+		m_EdServerPort = NULL;
+	}
+	if (m_pBtnConnect) {
+		m_pBtnConnect->DestroyWindow();
+		delete m_pBtnConnect;
+		m_pBtnConnect = NULL;
 	}
 }
 
@@ -340,6 +381,9 @@ void CIPCClientDlg::OnBtnClick(UINT nID)
 		::PostMessage(hwnd, WM_IPC_MSG, Cmd_SM_CString, strMsg.GetLength() * sizeof(TCHAR));
 		break;
 	}
+	case UI_POS_BTN_CONNECT:
+		InitSocket();
+		break;
 	default:
 		break;
 	}

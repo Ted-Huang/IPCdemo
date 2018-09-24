@@ -46,9 +46,12 @@ private:
 	CButton* m_pBtnSendMsg;
 	CButton* m_pBtnSharedMem;
 	CButton* m_pBtnClear;
+	CButton* m_pBtnConnect;
 	CListBox* m_pLbDebugString;
 	CListBox* m_pLbSMString;
 	CEdit* m_EdSharedMem;
+	CEdit* m_EdServerIP;
+	CEdit* m_EdServerPort;
 	HANDLE m_hMapFile;
 	LPVOID m_pBuf;
 	enum{
@@ -58,6 +61,7 @@ private:
 		UI_POS_BTN_SENDMSG,
 		UI_POS_BTN_SHAREDMEMORY,
 		UI_POS_BTN_CLEAR,
+		UI_POS_BTN_CONNECT,
 		UI_POS_BTN_END,
 		//LIST BOX
 		UI_POS_LB_BEGIN,
@@ -67,7 +71,10 @@ private:
 		//EDIT
 		UI_POS_ED_BEGIN,
 		UI_POS_ED_SHAREDMEMORY,
+		UI_POS_ED_SERVERIP,
+		UI_POS_ED_SERVERPORT,
 		UI_POS_ED_END,
 		UI_POS_ITEM_END
 	};
 };
+
