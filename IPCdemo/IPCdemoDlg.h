@@ -3,10 +3,10 @@
 //
 
 #pragma once
-
+#include "SocketServer.h"
 
 class CSocketServer;
-class CIPCdemoDlg : public CDialogEx
+class CIPCdemoDlg : public CDialogEx, public SOCKET_CALLBACK
 {
 // «Øºc
 public:
@@ -31,6 +31,7 @@ protected:
 	afx_msg void OnBtnClick(UINT nID);
 	afx_msg LRESULT OnIPCMsg(WPARAM wp, LPARAM lp);
 	afx_msg HCURSOR OnQueryDragIcon();
+	void OnSocketCallBack(SocketEventType eType, CString strMsg);
 	DECLARE_MESSAGE_MAP()
 
 private:

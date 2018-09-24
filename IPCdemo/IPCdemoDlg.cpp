@@ -186,7 +186,7 @@ void CIPCdemoDlg::InitSocket()
 		if (AfxSocketInit() == FALSE)
 			return;
 
-		m_pSocketServer = new CSocketServer();
+		m_pSocketServer = new CSocketServer(this);
 		if (!m_pSocketServer->Create(SocketPort, SOCK_STREAM, strIP))
 			return;
 
@@ -388,6 +388,22 @@ void CIPCdemoDlg::OnBtnClick(UINT nID)
 		break;
 	}
 	default:
+		break;
+	}
+}
+
+void CIPCdemoDlg::OnSocketCallBack(SocketEventType eType, CString strMsg)
+{
+	
+	switch (eType)
+	{
+	case $ST_Accept:
+		if (!m_pLbSocketString)
+			return;
+		m_pLbSocketString->AddString(strMsg);
+		m_pLbSocketString->SetCurSel(m_pLbSocketString->GetCount() - 1);
+		break;
+	case $ST_Receive:
 		break;
 	}
 }

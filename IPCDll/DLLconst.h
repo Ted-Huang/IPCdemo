@@ -7,6 +7,14 @@
 #define IPCDLL_API  __declspec(dllimport) 
 #endif
 
+enum SocketEventType
+{
+	$ST_None = 0,
+	$ST_Connect,
+	$ST_Accept,
+	$ST_Receive
+};
+
 
 // socket 
 #define SocketBuffer	1024

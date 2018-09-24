@@ -3,7 +3,7 @@
 #include "SocketClient.h"
 #include "SocketServer.h"
 
-CSocketServer::CSocketServer()
+CSocketServer::CSocketServer(SOCKET_CALLBACK* pCallback): m_pCallBack (pCallback)
 {
 	m_arrSocketClient.RemoveAll();
 }
@@ -30,10 +30,11 @@ void CSocketServer::OnAccept(int nErrorCode)
 		TRACE(_T("Cannot Accept Connection"));
 	}
 
-	CString strIP;
+	CString strIP, strMsg;
 	UINT nPort;
 	pSession->GetPeerName(strIP, nPort);
-	TRACE(_T("Accept IP: %s Port: %d"), strIP, nPort);
+	strMsg.Format(_T("Accept IP: %s Port: %d"), strIP, nPort);
+	TRACE(strMsg);
 
 	// Start the other thread.
 	CSockThread* pSockThread = (CSockThread*)AfxBeginThread(RUNTIME_CLASS(CSockThread), THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
@@ -44,6 +45,11 @@ void CSocketServer::OnAccept(int nErrorCode)
 
 	m_arrSocketClient.Add(pSockThread);
 	pSockThread->ResumeThread();
+
+	if (!m_pCallBack)
+		return;
+
+	m_pCallBack->OnSocketCallBack($ST_Accept, strMsg);
 }
 
 IMPLEMENT_DYNCREATE(CSockThread, CWinThread)
