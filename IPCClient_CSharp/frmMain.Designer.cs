@@ -28,12 +28,46 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.btnSendMsg = new System.Windows.Forms.Button();
+            this.lsDebugString = new System.Windows.Forms.ListBox();
+            this.SuspendLayout();
+            // 
+            // btnSendMsg
+            // 
+            this.btnSendMsg.Location = new System.Drawing.Point(12, 25);
+            this.btnSendMsg.Name = "btnSendMsg";
+            this.btnSendMsg.Size = new System.Drawing.Size(75, 23);
+            this.btnSendMsg.TabIndex = 0;
+            this.btnSendMsg.Text = "SendMsg";
+            this.btnSendMsg.UseVisualStyleBackColor = true;
+            this.btnSendMsg.Click += new System.EventHandler(this.btnSendMsg_Click);
+            // 
+            // lsDebugString
+            // 
+            this.lsDebugString.FormattingEnabled = true;
+            this.lsDebugString.Location = new System.Drawing.Point(119, 25);
+            this.lsDebugString.Name = "lsDebugString";
+            this.lsDebugString.Size = new System.Drawing.Size(120, 56);
+            this.lsDebugString.TabIndex = 1;
+            // 
+            // frmMain
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Controls.Add(this.lsDebugString);
+            this.Controls.Add(this.btnSendMsg);
+            this.Name = "frmMain";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.frmMain_Load);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Button btnSendMsg;
+        private System.Windows.Forms.ListBox lsDebugString;
     }
 }
 
