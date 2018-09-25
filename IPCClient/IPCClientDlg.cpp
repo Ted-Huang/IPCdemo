@@ -225,7 +225,7 @@ void CIPCClientDlg::InitCtrl()
 	m_pLbSocketString->Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_LB_SOCKETSTRING);
 
 	ptBase = { 150, 90 };
-	ptSize = { 80, 30 };
+	ptSize = { 100, 30 };
 	m_EdSharedMem = new CEdit();
 	m_EdSharedMem->Create(WS_CHILD | WS_VISIBLE | WS_BORDER , CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_ED_SHAREDMEMORY);
 
@@ -477,6 +477,10 @@ void CIPCClientDlg::OnSocketCallBack(SocketEventType eType, CString strMsg)
 
 	if (!m_pLbSocketString)
 		return;
+
+	if (strMsg.Find(_T("HeartBeat")) != -1) //do not print HeartBeat
+		return;
+
 	m_pLbSocketString->AddString(strType + strMsg);
 	m_pLbSocketString->SetCurSel(m_pLbSocketString->GetCount() - 1);
 }

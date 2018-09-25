@@ -244,7 +244,7 @@ void CIPCdemoDlg::InitCtrl()
 
 
 	ptBase = { 150, 90 };
-	ptSize = { 80, 30 };
+	ptSize = { 100, 30 };
 	m_EdSharedMem = new CEdit();
 	m_EdSharedMem->Create(WS_CHILD | WS_VISIBLE | WS_BORDER, CRect(ptBase.x, ptBase.y, ptBase.x + ptSize.x, ptBase.y + ptSize.y), this, UI_POS_ED_SHAREDMEMORY);
 
@@ -372,8 +372,8 @@ void CIPCdemoDlg::OnBtnClick(UINT nID)
 	{
 	case UI_POS_BTN_SENDMSG:
 	{
-		//HWND hwnd = ::FindWindow(_T("CIPCClientDlg"), NULL);
-		HWND hwnd = ::FindWindow(NULL, _T("Form1"));
+		HWND hwnd = ::FindWindow(_T("CIPCClientDlg"), NULL);
+		//HWND hwnd = ::FindWindow(NULL, _T("Form1"));
 		if (!hwnd)
 			return;
 		::PostMessage(hwnd, WM_IPC_MSG, Cmd_Test, (LPARAM)10); //lparam
@@ -439,6 +439,10 @@ void CIPCdemoDlg::OnSocketCallBack(SocketEventType eType, CString strMsg)
 
 	if (!m_pLbSocketString)
 		return;
+
+	if (strMsg.Find(_T("HeartBeat")) != -1) //do not print HeartBeat
+		return;
+
 	m_pLbSocketString->AddString(strType + strMsg);
 	m_pLbSocketString->SetCurSel(m_pLbSocketString->GetCount() - 1);
 }
