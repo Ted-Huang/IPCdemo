@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -69,7 +71,46 @@ namespace IPCClient_CSharp
 
         private void btnSharedMemory_Click(object sender, EventArgs e)
         {
+            try
+            {
+                using (MemoryMappedFile mmf = MemoryMappedFile.OpenExisting("Global\\SM_IPC"))
+                {
+                    //Mutex mutex = Mutex.OpenExisting("DarkthreadSharedMem");
+                    //mutex.WaitOne();                    
+                    //using (MemoryMappedViewStream stream = mmf.CreateViewStream(0, 0))
+                    //{
+                    //    using (var br = new BinaryReader(stream))
+                    //    {
+                    //        //先讀取長度，再讀取内容
+                    //        var len = br.ReadInt32();
+                    //        var word = Encoding.UTF8.GetString(br.ReadBytes(len), 0, len);
+                    //    }
+                    //}
+                    using (MemoryMappedViewStream stream = mmf.CreateViewStream(0, 1024))
+                    {
+                        using (var bw = new BinaryWriter(stream))
+                        {
+                            if (txtSharedMemory.Text.Length == 0)
+                                return;
 
+                            IntPtr hwnd = FindWindow("CIPCdemoDlg", null);
+                            if (hwnd == IntPtr.Zero)
+                                return;
+                            
+                            var msg = Encoding.UTF8.GetBytes(txtSharedMemory.Text);
+                            bw.Write(msg.Length);
+                            bw.Write(msg);
+                            
+                            SendMessage(hwnd, (uint)WIMMessage.WM_IPC_MSG, (int)Msg_Cmd.Cmd_SM_CString, new IntPtr(msg.Length));
+                        }
+                    }
+                    //mutex.ReleaseMutex();
+                }
+            }
+            catch (FileNotFoundException ex)
+            {
+                MessageBox.Show("Memory-mapped file does not exist.");
+            }
         }
 
         private void btnSocketSend_Click(object sender, EventArgs e)
