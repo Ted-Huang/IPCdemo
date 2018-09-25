@@ -59,5 +59,27 @@ namespace IPCClient_CSharp
             }
             base.WndProc(ref m);
         }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            lsDebugString.Items.Clear();
+            lsSharedMemory.Items.Clear();
+            lsSocket.Items.Clear();
+        }
+
+        private void btnSharedMemory_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnSocketSend_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
